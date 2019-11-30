@@ -1,0 +1,67 @@
+Sub Scrap_Data()
+
+    Dim ie As New InternetExplorer
+    Dim ws As Worksheet
+    ie.Visible = False
+    
+    For Each ws In Worksheets
+        trowNum = ws.Cells(Rows.Count, "A").End(xlUp).Row + 1
+               
+        If ws.Name = "ProductStreams" Then
+            ie.navigate ("http://connect.learnpad.com/manage/productstreams.cfm")
+            Do
+            DoEvents
+            Loop Until ie.readyState = READYSTATE_COMPLETE
+            Set webpage = ie.document
+            Set mtbl = webpage.getElementsByClassName("items")(0).getElementsByTagName("tbody")(0)
+            Set table_data = mtbl.getElementsByTagName("tr")
+            
+            For Each trow In table_data
+                For Each tcell In trow.Children
+                    tcellNum = tcellNum + 1
+                    ws.Cells(trowNum, 1).Value = Date
+                    ws.Cells(trowNum, tcellNum + 1) = Trim(tcell.innerText)
+                Next tcell
+            trowNum = trowNum + 1
+            tcellNum = 0
+            Next trow
+        
+        Else
+            If ie.LocationURL <> "http://connect.learnpad.com/manage/admin/temperatures.cfm" Then
+                ie.navigate ("http://connect.learnpad.com/manage/admin/temperatures.cfm")
+                Do
+                DoEvents
+                Loop Until ie.readyState = READYSTATE_COMPLETE
+            End If
+            
+            If ws.Name = "VR Battery" Then
+                Set webpage = ie.document
+                Set mtbl = webpage.getElementsByClassName("resultsPanel")(0).getElementsByTagName("tbody")(0)
+                Set table_data = mtbl.getElementsByTagName("tr")
+               
+                
+            ElseIf ws.Name = "LP Battery" Then
+                Set webpage = ie.document
+                Set mtbl = webpage.getElementsByClassName("resultsPanel")(1).getElementsByTagName("tbody")(0)
+                Set table_data = mtbl.getElementsByTagName("tr")
+                
+            
+            End If
+            
+        For Each trow In table_data
+            For Each tcell In trow.Children
+                tcellNum = tcellNum + 1
+                ws.Cells(trowNum, 1).Value = Date
+                ws.Cells(trowNum, tcellNum + 1) = Trim(tcell.innerText)
+                ws.Cells(trowNum, tcellNum + 1).NumberFormat = "General"
+            Next tcell
+        trowNum = trowNum + 1
+        tcellNum = 0
+        Next trow
+            
+        End If
+       
+    Next ws
+
+ie.Quit
+End Sub
