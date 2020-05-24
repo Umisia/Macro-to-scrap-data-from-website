@@ -1,5 +1,5 @@
 'Input Excel File's Full Path
-  ExcelFilePath = "path\DailyChecks.xlsm"
+  ExcelFilePath = "C:\Users\X\Support - Reporting\DailyChecks.xlsm"
 
 'Input Module/Macro name within the Excel File
   MacroPath = "Module1.Scrap_Data"

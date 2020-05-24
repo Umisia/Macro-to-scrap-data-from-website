@@ -2,13 +2,50 @@ Sub Scrap_Data()
 
     Dim ie As New InternetExplorer
     Dim ws As Worksheet
-    ie.Visible = False
+    
+    lastRow = Cells(Rows.Count, "A").End(xlUp).Row
+    
+    If Cells(lastRow, 1) = Date Then End
+       
+    ie.Visible = True
+    
+    
+    Dim oHTML_Element As IHTMLElement
+    Dim login_url As String
+    
+    login_url = "https://xxxxx/login/index.cfm"
+    
+    ie.navigate login_url
+
+ 
+    Do
+    Loop Until ie.readyState = READYSTATE_COMPLETE
+    
+    Set HTMLDoc = ie.document
+
+    HTMLDoc.all.Email.Value = [email]
+    HTMLDoc.all.Password.Value = [password]
+    
+    For Each oHTML_Element In HTMLDoc.getElementsByTagName("input")
+        If oHTML_Element.Type = "submit" Then
+            oHTML_Element.Click
+            Exit For
+        End If
+           
+    Next
+    
+    newHour = Hour(Now())
+    newMinute = Minute(Now())
+    newSecond = Second(Now()) + 5
+    waitTime = TimeSerial(newHour, newMinute, newSecond)
+    Application.Wait waitTime
+
     
     For Each ws In Worksheets
         trowNum = ws.Cells(Rows.Count, "A").End(xlUp).Row + 1
                
         If ws.Name = "ProductStreams" Then
-            ie.navigate ("http://connect.learnpad.com/manage/productstreams.cfm")
+            ie.navigate ("http://xxxxx/manage/productstreams.cfm")
             Do
             DoEvents
             Loop Until ie.readyState = READYSTATE_COMPLETE
@@ -27,8 +64,8 @@ Sub Scrap_Data()
             Next trow
         
         Else
-            If ie.LocationURL <> "http://connect.learnpad.com/manage/admin/temperatures.cfm" Then
-                ie.navigate ("http://connect.learnpad.com/manage/admin/temperatures.cfm")
+            If ie.LocationURL <> "http://xxxxx/manage/admin/temperatures.cfm" Then
+                ie.navigate ("http://xxxxx/manage/admin/temperatures.cfm")
                 Do
                 DoEvents
                 Loop Until ie.readyState = READYSTATE_COMPLETE
@@ -65,3 +102,4 @@ Sub Scrap_Data()
 
 ie.Quit
 End Sub
+
